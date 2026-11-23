@@ -1,0 +1,276 @@
+<Window x:Class="ProductionApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Учёт изделий" Style="{StaticResource AppWindow}"
+        WindowStartupLocation="CenterScreen" Loaded="MainWindow_Loaded" Closing="MainWindow_Closing" Height="540">
+    <Grid Margin="24,18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Margin="0,0,0,16">
+            <Button x:Name="BackButton" DockPanel.Dock="Right" Content="Назад"
+                    Click="Back_Click" Visibility="Collapsed" />
+            <TextBlock x:Name="PageTitle" Text="Главная" Style="{StaticResource Heading}" DockPanel.Dock="Left"
+                       VerticalAlignment="Center" />
+            <TextBlock x:Name="ServiceProduct" Foreground="{StaticResource SecondaryText}"
+                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                       Margin="16,0,12,0" Visibility="Collapsed" />
+        </DockPanel>
+
+        <Grid x:Name="HomePage" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="HomeModules" SizeChanged="HomeModules_SizeChanged" Margin="0,0,-8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Button x:Name="RegisterButton" Grid.ColumnSpan="2" Margin="0,0,8,8" MinHeight="66"
+                        Style="{StaticResource PrimaryButton}" Click="Register_Click" IsEnabled="False"
+                        HorizontalContentAlignment="Left" AutomationProperties.Name="Регистрация изделия">
+                    <TextBlock Text="Регистрация изделия" FontSize="18.6667" TextWrapping="Wrap" />
+                </Button>
+                <Border x:Name="NextStage" Grid.Column="2" Grid.ColumnSpan="2" Style="{StaticResource FutureModule}">
+                    <TextBlock Text="В разработке" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <Border x:Name="FutureSection" Grid.Column="4" Grid.ColumnSpan="2" Style="{StaticResource FutureModule}">
+                    <TextBlock Text="В разработке" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </Grid>
+            <DockPanel Grid.Row="1" Margin="0,10,0,8">
+                <Button x:Name="RetryDatabaseButton" DockPanel.Dock="Right" Content="Повторить подключение"
+                        Click="RetryDatabase_Click" Margin="12,0,0,0" Visibility="Collapsed" />
+                <TextBlock x:Name="HomeFeedback" DockPanel.Dock="Right" Style="{StaticResource HintText}"
+                           Margin="12,0,0,0" VerticalAlignment="Center" />
+                <TextBlock x:Name="HomeStatus" Style="{StaticResource HintText}" VerticalAlignment="Center" />
+            </DockPanel>
+            <Expander x:Name="DatabaseDetails" Grid.Row="2" Header="Подробности ошибки" Visibility="Collapsed">
+                <ScrollViewer MaxHeight="82" VerticalScrollBarVisibility="Auto">
+                    <TextBlock x:Name="DatabaseErrorText" Style="{StaticResource HintText}" Margin="6,5" />
+                </ScrollViewer>
+            </Expander>
+            <DockPanel x:Name="SavedProductsPanel" Grid.Row="3" Visibility="Collapsed" VerticalAlignment="Top">
+                <Grid DockPanel.Dock="Top" Margin="14,0,18,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="140" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Название изделия" />
+                    <TextBlock Grid.Column="1" Text="Серийный номер" Margin="12,0,0,0" />
+                    <TextBlock Grid.Column="2" Text="Дата поступления" HorizontalAlignment="Right" />
+                </Grid>
+                <ListBox x:Name="SavedProducts" Background="White" BorderBrush="{StaticResource Outline}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         AutomationProperties.Name="Сохранённые изделия">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Button Click="OpenProduct_Click" HorizontalContentAlignment="Stretch"
+                                    Margin="2,1" Padding="10,6" AutomationProperties.Name="{Binding Name}"
+                                    ToolTip="Открыть карточку изделия">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="1" Text="{Binding SerialNumber}" Margin="12,0"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="2" Text="{Binding ReceivedDate, StringFormat=dd.MM.yyyy}"
+                                               HorizontalAlignment="Right" />
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Grid>
+
+        <Grid x:Name="RegistrationPage" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollViewer x:Name="RegistrationScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <UniformGrid x:Name="RegistrationFields" Columns="3" SizeChanged="RegistrationFields_SizeChanged" Margin="0,0,-8,0">
+                    <Button x:Name="NameFieldButton" Style="{StaticResource FieldButton}" Tag="Name"
+                            Click="EditField_Click" AutomationProperties.Name="Название изделия">
+                        <StackPanel>
+                            <TextBlock Text="Название изделия" TextWrapping="Wrap" />
+                            <TextBlock x:Name="NamePreview" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="SerialFieldButton" Style="{StaticResource FieldButton}" Tag="Serial"
+                            Click="EditField_Click" AutomationProperties.Name="Серийный номер">
+                        <StackPanel>
+                            <TextBlock Text="Серийный номер" TextWrapping="Wrap" />
+                            <TextBlock x:Name="SerialPreview" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="DateFieldButton" Style="{StaticResource FieldButton}" Tag="Date"
+                            Click="EditField_Click" AutomationProperties.Name="Дата поступления">
+                        <StackPanel>
+                            <TextBlock Text="Дата поступления" TextWrapping="Wrap" />
+                            <TextBlock x:Name="DatePreview" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="MalfunctionFieldButton" Style="{StaticResource FieldButton}" Tag="Malfunction"
+                            Click="EditField_Click" AutomationProperties.Name="Описание неисправности">
+                        <StackPanel>
+                            <TextBlock Text="Описание неисправности" TextWrapping="Wrap" />
+                            <TextBlock x:Name="MalfunctionPreview" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="InspectionFieldButton" Style="{StaticResource FieldButton}" Tag="Inspection"
+                            Click="EditField_Click" AutomationProperties.Name="Внешний осмотр">
+                        <StackPanel>
+                            <TextBlock Text="Внешний осмотр" TextWrapping="Wrap" />
+                            <TextBlock x:Name="InspectionPreview" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="DiagnosticsFieldButton" Style="{StaticResource FieldButton}" Tag="Diagnostics"
+                            Click="EditField_Click" AutomationProperties.Name="Выявление неисправности">
+                        <StackPanel>
+                            <TextBlock Text="Выявление неисправности" TextWrapping="Wrap" />
+                            <TextBlock x:Name="DiagnosticsPreview" TextTrimming="CharacterEllipsis"
+                                       Foreground="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+            </ScrollViewer>
+            <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <TextBlock x:Name="RegistrationStatus" TextWrapping="Wrap" Foreground="#952B2B" Margin="0,0,0,6">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <DockPanel>
+                    <Button x:Name="SaveProductButton" DockPanel.Dock="Right" Content="Сохранить изделие"
+                            Style="{StaticResource PrimaryButton}" Click="SaveProduct_Click" Margin="10,0,0,0" />
+                    <Button x:Name="ServiceButton" DockPanel.Dock="Left" Content="Сервисные работы" Click="Service_Click" />
+                    <TextBlock x:Name="ServiceSummary" Style="{StaticResource HintText}" Margin="10,0,0,0"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="ServicePage" Grid.Row="1" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="8,5" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+                <DataTemplate x:Key="ServiceRow">
+                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                </DataTemplate>
+                <Style TargetType="ListBox">
+                    <Setter Property="BorderBrush" Value="{StaticResource Outline}" />
+                    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                    <Setter Property="ItemTemplate" Value="{StaticResource ServiceRow}" />
+                    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+                </Style>
+            </Grid.Resources>
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Компоненты" Style="{StaticResource Heading}"
+                           Margin="0,0,0,8" />
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                    <WrapPanel>
+                        <Button x:Name="AddComponentButton" Content="Добавить компонент" Click="AddComponent_Click" Margin="0,0,8,0" />
+                        <Button x:Name="RemoveComponentButton" Content="Удалить" Click="RemoveComponent_Click"
+                                IsEnabled="False" AutomationProperties.Name="Удалить компонент" />
+                    </WrapPanel>
+                </StackPanel>
+                <Grid>
+                    <ListBox x:Name="ComponentsList" SelectionChanged="ServiceSelection_Changed"
+                             AutomationProperties.Name="Компоненты" />
+                    <TextBlock Text="Компоненты пока не добавлены" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasItems, ElementName=ComponentsList}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </DockPanel>
+            <DockPanel Grid.Column="2">
+                <TextBlock DockPanel.Dock="Top" Text="Выполняемые работы" Style="{StaticResource Heading}"
+                           Margin="0,0,0,8" />
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                    <WrapPanel>
+                        <Button x:Name="AddWorkButton" Content="Добавить работу" Click="AddWork_Click" Margin="0,0,8,0" />
+                        <Button x:Name="RemoveWorkButton" Content="Удалить" Click="RemoveWork_Click"
+                                IsEnabled="False" AutomationProperties.Name="Удалить работу" />
+                    </WrapPanel>
+                </StackPanel>
+                <Grid>
+                    <ListBox x:Name="WorksList" SelectionChanged="ServiceSelection_Changed"
+                             AutomationProperties.Name="Выполняемые работы" />
+                    <TextBlock Text="Работы пока не добавлены" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource HintText}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasItems, ElementName=WorksList}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </DockPanel>
+            <TextBlock Grid.Row="1" Grid.ColumnSpan="3" Style="{StaticResource HintText}" Margin="0,8,0,0"
+                       Text="Чтобы сохранить списки, вернитесь к регистрации и нажмите «Сохранить изделие»." />
+        </Grid>
+    </Grid>
+</Window>
